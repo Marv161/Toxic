@@ -14,9 +14,8 @@
             --bg-main: #000000;
             --bg-secondary: #0a0a0a;
             --bg-panel: #141414;
-            --highlight: #ce93d8;       /* Lila Pastel (Mantenido para el interior) */
-            --orange-flame: #ff6f00;    /* Nuevo Naranja Principal */
-            --orange-light: #ffcc80;
+            --highlight: #ce93d8;       /* Lila Pastel (Detalles menores) */
+            --orange-flame: #ff6f00;    /* Naranja Principal Intro */
             --text-main: #ffffff;
             --text-gray: #b0b0b0;
             --border-color: #2a2a2a;
@@ -26,7 +25,6 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            /* Desactivar selección de texto para sensación de app */
             user-select: none;
             -webkit-user-drag: none;
         }
@@ -35,7 +33,7 @@
             background-color: var(--bg-main);
             color: var(--text-main);
             font-family: 'Rajdhani', sans-serif;
-            overflow: hidden; /* Sin scroll */
+            overflow: hidden;
             height: 100vh;
             width: 100vw;
             display: flex;
@@ -82,12 +80,12 @@
         .intro-cover-container {
             width: 600px;
             max-width: 90vw;
-            height: 250px; /* Altura tipo portada */
+            height: 250px;
             overflow: hidden;
             border: 2px solid var(--orange-flame);
             box-shadow: 0 0 30px rgba(255, 111, 0, 0.3);
             border-radius: 10px;
-            margin-bottom: -40px; /* Superposición ligera con el título */
+            margin-bottom: -40px;
             z-index: 1;
             position: relative;
         }
@@ -101,14 +99,14 @@
 
         .toxic-title-intro {
             font-family: 'Orbitron', sans-serif;
-            font-size: 6vw; /* Responsivo al ancho */
+            font-size: 6vw;
             text-transform: uppercase;
             font-weight: 900;
             letter-spacing: 10px;
             z-index: 2;
             margin-top: 20px;
             
-            /* Gradiente Naranja Fuego */
+            /* Gradiente Naranja Fuego (Intro) */
             background-image: linear-gradient(
                 90deg, 
                 #fff3e0 0%, 
@@ -207,7 +205,7 @@
             opacity: 0.4;
             filter: grayscale(100%) contrast(1.1);
             transition: all 0.5s ease;
-            pointer-events: none; /* Previene arrastre de imagen individual */
+            pointer-events: none;
         }
 
         .char-box:hover img {
@@ -283,11 +281,14 @@
             font-size: 3.5rem;
             margin-bottom: 20px;
             text-align: center;
-            background: linear-gradient(to right, #fff, #ce93d8, #fff);
+            
+            /* Gradiente Blanco y Negro (Metalizado) */
+            background: linear-gradient(to right, #ffffff, #666666, #ffffff);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 0 0 15px rgba(206, 147, 216, 0.5);
+            /* Sombra blanca para que resalte en el fondo negro */
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
         }
 
         .card-controls {
@@ -332,31 +333,35 @@
         .about-text {
             text-align: center;
             color: var(--text-gray);
-            font-size: 1rem;
+            font-size: 0.95rem;
             line-height: 1.6;
+            text-shadow: 0 0 2px rgba(0,0,0,0.8);
         }
 
         .friends-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 20px;
             margin-top: 10px;
             justify-items: center;
+            width: 100%;
         }
 
-        .friend-item {
+        /* Actualizado a etiqueta 'a' */
+        a.friend-item {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 8px;
             cursor: pointer;
             transition: transform 0.2s;
+            text-decoration: none; /* Quitar subrayado */
         }
-        .friend-item:hover { transform: translateY(-5px); }
+        a.friend-item:hover { transform: translateY(-5px); }
 
         .friend-img {
-            width: 65px;
-            height: 65px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             border: 2px solid #333; 
             object-fit: cover;
@@ -364,15 +369,22 @@
             pointer-events: none;
         }
 
-        .friend-item:hover .friend-img {
+        a.friend-item:hover .friend-img {
             border-color: var(--highlight);
-            box-shadow: 0 0 10px var(--highlight);
+            box-shadow: 0 0 15px var(--highlight);
+            transform: rotate(5deg);
         }
 
         .friend-name {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: var(--text-gray);
             text-transform: uppercase;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        a.friend-item:hover .friend-name {
+            color: var(--highlight);
         }
 
         /* --- REOPEN PROFILE BUTTON --- */
@@ -553,10 +565,11 @@
 
     <div class="noise-overlay"></div>
 
-    <!-- Intro Screen Actualizado -->
+    <!-- Intro Screen -->
     <div id="intro-screen">
         <div class="intro-cover-container">
-            <img src="https://i.ibb.co/4wbz1Gx9/nobara.gif" alt="Cover" class="intro-gif">
+            <!-- Nuevo GIF Solicitado -->
+            <img src="https://xatimg.com/image/28c7LBbn5AcF.gif" alt="Cover" class="intro-gif">
         </div>
         <h1 class="toxic-title-intro">TOXIC</h1>
         <button id="start-btn" class="enter-btn">ENTRAR</button>
@@ -590,6 +603,7 @@
     <div id="final-card">
         <button class="close-btn" onclick="toggleCard(false)"><i class="fa-solid fa-xmark"></i></button>
         <div class="card-header">
+            <!-- Título con efecto Blanco y Negro -->
             <h1>TOXIC</h1>
         </div>
         
@@ -600,30 +614,23 @@
 
         <div id="about" class="content-section active">
             <p class="about-text">
-                <strong>Cállese Wey</strong><br>
-                No hay mensajes de mi amor.... 
+                Rodeada de personas llenas de odio y envidia, queriendo robar su luz, pero no hay nadie que pueda quitarle su brillo, ella tiene al sol y a la luna de su lado y se quedaran con las ganas de hacerlo.☀🌙✨
                 <br><br>
+                No todos van a entender por lo que tuvo que pasar para tener esa intensidad y esa sonrisa llena de vida, tampoco tiene tiempo para explicártelo, solo sabe que no existe oscuridad que pueda opacarla y mucho menos personas que puedan apagarla.🦋✨🔥
             </p>
         </div>
 
         <div id="friends" class="content-section">
             <div class="friends-grid">
-                 <div class="friend-item">
-                    <img src="https://ui-avatars.com/api/?name=Z&background=111&color=ce93d8" class="friend-img">
-                    <span class="friend-name">Zero</span>
-                </div>
-                <div class="friend-item">
-                    <img src="https://ui-avatars.com/api/?name=K&background=111&color=ce93d8" class="friend-img">
-                    <span class="friend-name">Kira</span>
-                </div>
-                 <div class="friend-item">
-                    <img src="https://ui-avatars.com/api/?name=L&background=111&color=ce93d8" class="friend-img">
-                    <span class="friend-name">Lux</span>
-                </div>
-                <div class="friend-item">
-                    <img src="https://ui-avatars.com/api/?name=N&background=111&color=ce93d8" class="friend-img">
-                    <span class="friend-name">Nox</span>
-                </div>
+                <!-- Aliados Actualizados con Links -->
+                 <a href="https://xat.me/Conductance" target="_blank" class="friend-item">
+                    <img src="https://i.imgur.com/AJPfk4n.png" class="friend-img">
+                    <span class="friend-name">Mi Preciosa</span>
+                </a>
+                <a href="https://xat.me/iLuguinhoo" target="_blank" class="friend-item">
+                    <img src="https://xatimg.com/image/3nzHYdYl66Yc.jpg" class="friend-img">
+                    <span class="friend-name">Mi Brou</span>
+                </a>
             </div>
         </div>
     </div>
@@ -650,7 +657,7 @@
         ];
 
         const container = document.getElementById('main-container');
-        const startBtn = document.getElementById('start-btn'); // Ahora vinculado al botón ENTRAR
+        const startBtn = document.getElementById('start-btn'); 
         const introScreen = document.getElementById('intro-screen');
         const finalCard = document.getElementById('final-card');
         const reopenBtn = document.getElementById('reopen-btn');
@@ -667,7 +674,7 @@
             const img = document.createElement('img');
             img.src = charImages[i % charImages.length];
 
-            // Posicionamiento
+            // Posicionamiento Invertido (Turno Anterior)
             if (i === 1) img.style.objectPosition = "15% center"; 
             if (i === 7) img.style.objectPosition = "90% center";
             if (i === 9) img.style.objectPosition = "95% center"; 
@@ -691,11 +698,11 @@
             
             musicPlayer.classList.add('active');
             audio.volume = 0.5;
-            // Reproducir música (promesa manejada)
+            
             audio.play().then(() => {
                 console.log("Audio playing");
             }).catch(e => {
-                console.log("Audio play failed (interaction needed or file missing)", e);
+                console.log("Audio play failed", e);
             });
             
             setTimeout(() => {
