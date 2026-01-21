@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intoxicada</title>
+    <!-- Fuentes estilo Anime/Tech -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <!-- Iconos -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-main: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-panel: #141414;
+            --highlight: #ce93d8;       /* Lila Pastel (Mantenido para el interior) */
+            --orange-flame: #ff6f00;    /* Nuevo Naranja Principal */
+            --orange-light: #ffcc80;
+            --text-main: #ffffff;
+            --text-gray: #b0b0b0;
+            --border-color: #2a2a2a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* Desactivar selección de texto para sensación de app */
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
+            overflow: hidden; /* Sin scroll */
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Ruido de fondo */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAA5OTkAAAAAAAAAAABMTExERERmZmZnPsoQAAAACHRSTlMAMwA3M2YzM3OqTo8AAAAJcEhZcwAAFiUAABYlAUlSJPAAAAA2SURBVDjLY2AYBaNg2AJGJiBpCqSdgLQwkOYC0iJAmgdIywBpBSCtAqTVgLQqENIEQBAKo2AYBQDULBP0k1R62gAAAABJRU5ErkJggg==');
+            opacity: 0.04;
+            z-index: 999;
+        }
+
+        /* --- INTRO SCREEN --- */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease-out;
+            gap: 20px;
+        }
+
+        #intro-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Estilo Portada GIF */
+        .intro-cover-container {
+            width: 600px;
+            max-width: 90vw;
+            height: 250px; /* Altura tipo portada */
+            overflow: hidden;
+            border: 2px solid var(--orange-flame);
+            box-shadow: 0 0 30px rgba(255, 111, 0, 0.3);
+            border-radius: 10px;
+            margin-bottom: -40px; /* Superposición ligera con el título */
+            z-index: 1;
+            position: relative;
+        }
+
+        .intro-gif {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: contrast(1.1) brightness(0.9);
+        }
+
+        .toxic-title-intro {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 6vw; /* Responsivo al ancho */
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: 10px;
+            z-index: 2;
+            margin-top: 20px;
+            
+            /* Gradiente Naranja Fuego */
+            background-image: linear-gradient(
+                90deg, 
+                #fff3e0 0%, 
+                #ff9800 25%, 
+                #ef6c00 50%, 
+                #ff9800 75%, 
+                #fff3e0 100%
+            );
+            background-size: 200% auto;
+            
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s linear infinite;
+            
+            filter: drop-shadow(0px 0px 15px rgba(255, 111, 0, 0.6));
+            transition: transform 0.3s;
+        }
+
+        /* Botón Entrar Personalizado */
+        .enter-btn {
+            background: transparent;
+            border: 2px solid var(--orange-flame);
+            color: var(--orange-flame);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            padding: 10px 40px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(255, 111, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .enter-btn:hover {
+            background: var(--orange-flame);
+            color: #000;
+            box-shadow: 0 0 30px rgba(255, 111, 0, 0.8);
+            transform: scale(1.05);
+        }
+
+        /* --- MAIN CONTAINER (GRID DE COLUMNAS) --- */
+        #main-container {
+            position: absolute;
+            width: 98vw; 
+            height: 96vh; 
+            display: grid;
+            grid-template-columns: repeat(11, 1fr); 
+            grid-template-rows: 1fr; 
+            gap: 4px; 
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        #main-container.active {
+            opacity: 1;
+        }
+
+        .char-box {
+            position: relative;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            height: 100%; 
+            width: 100%; 
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(100vh); 
+            transition: transform 0.4s ease, border-color 0.4s;
+            cursor: pointer;
+        }
+
+        .char-box.reveal {
+            transform: translateY(0); 
+            opacity: 1; 
+        }
+
+        .char-box:hover {
+            border-color: var(--highlight);
+            z-index: 100; 
+            transform: scaleX(1.15) !important; 
+            box-shadow: 0 0 30px rgba(206, 147, 216, 0.3);
+        }
+
+        .char-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            object-position: center top;
+            opacity: 0.4;
+            filter: grayscale(100%) contrast(1.1);
+            transition: all 0.5s ease;
+            pointer-events: none; /* Previene arrastre de imagen individual */
+        }
+
+        .char-box:hover img {
+            opacity: 1;
+            filter: grayscale(0%);
+        }
+
+        .char-number {
+            position: absolute;
+            top: 2vh;
+            font-family: 'Orbitron';
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 900;
+            z-index: 5;
+            pointer-events: none;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+
+        /* --- FINAL CENTRAL CARD --- */
+        #final-card {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 500px;
+            max-width: 90vw;
+            background: rgba(10, 10, 10, 0.95);
+            border: 1px solid var(--highlight);
+            box-shadow: 0 0 100px rgba(206, 147, 216, 0.15);
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            backdrop-filter: blur(10px);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        #final-card.show {
+            animation: zoomIn 0.6s forwards ease-out 0.5s; 
+            pointer-events: auto;
+            opacity: 1; 
+        }
+        
+        #final-card.hidden-card {
+            opacity: 0;
+            pointer-events: none;
+            transform: translate(-50%, -50%) scale(0.8); 
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: var(--text-gray);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .close-btn:hover {
+            color: var(--highlight);
+            transform: scale(1.1);
+        }
+
+        .card-header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(to right, #fff, #ce93d8, #fff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(206, 147, 216, 0.5);
+        }
+
+        .card-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            width: 100%;
+            justify-content: center;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid #333;
+            color: var(--text-gray);
+            padding: 10px 20px;
+            font-family: 'Orbitron';
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .tab-btn:hover, .tab-btn.active {
+            border-color: var(--highlight);
+            color: var(--highlight);
+            box-shadow: 0 0 10px rgba(206, 147, 216, 0.2);
+        }
+
+        .tab-btn.active {
+            background: rgba(206, 147, 216, 0.1);
+        }
+
+        .content-section {
+            display: none;
+            width: 100%;
+            animation: fadeIn 0.4s ease;
+        }
+        .content-section.active { display: block; }
+
+        .about-text {
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .friends-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+            justify-items: center;
+        }
+
+        .friend-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .friend-item:hover { transform: translateY(-5px); }
+
+        .friend-img {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: 2px solid #333; 
+            object-fit: cover;
+            transition: 0.3s;
+            pointer-events: none;
+        }
+
+        .friend-item:hover .friend-img {
+            border-color: var(--highlight);
+            box-shadow: 0 0 10px var(--highlight);
+        }
+
+        .friend-name {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            text-transform: uppercase;
+        }
+
+        /* --- REOPEN PROFILE BUTTON --- */
+        #reopen-btn {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 40px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--highlight);
+            color: var(--highlight);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            cursor: pointer;
+            z-index: 150; 
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.5s ease;
+            box-shadow: 0 0 20px rgba(206, 147, 216, 0.3);
+            border-radius: 5px;
+        }
+
+        #reopen-btn:hover {
+            background: var(--highlight);
+            color: #000;
+            box-shadow: 0 0 40px rgba(206, 147, 216, 0.8);
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        #reopen-btn.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* --- MINI MUSIC PLAYER --- */
+        #music-player {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 300;
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid var(--highlight);
+            border-radius: 50px; 
+            padding: 5px;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 300px; 
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(206, 147, 216, 0.3);
+            opacity: 0;
+            transform: translateY(100px);
+        }
+        
+        #music-player.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #music-player.collapsed {
+            width: 60px; 
+            height: 60px;
+            padding: 0;
+            border-radius: 50%;
+            cursor: pointer;
+            border-color: transparent;
+            background: transparent;
+        }
+
+        .album-art {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            position: relative;
+            cursor: pointer;
+            border: 2px solid var(--highlight);
+            margin-right: 10px;
+            background-color: #000;
+        }
+
+        .album-art img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            animation: spin 4s linear infinite;
+            animation-play-state: running;
+            pointer-events: none;
+        }
+
+        #music-player.paused .album-art img {
+            animation-play-state: paused;
+        }
+
+        #music-player.collapsed .album-art {
+            margin: 0;
+            width: 60px;
+            height: 60px;
+            border-width: 2px;
+        }
+
+        #music-player.collapsed .song-info,
+        #music-player.collapsed .controls {
+            opacity: 0;
+            pointer-events: none;
+            width: 0;
+            display: none;
+        }
+
+        .song-info {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            margin-right: 10px;
+            transition: opacity 0.3s;
+        }
+
+        .song-title {
+            font-size: 0.8rem;
+            color: var(--highlight);
+            font-weight: bold;
+        }
+        .song-artist {
+            font-size: 0.7rem;
+            color: #aaa;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 30px;
+        }
+
+        .play-btn {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .play-btn:hover {
+            color: var(--highlight);
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Animations */
+        @keyframes shimmer {
+            0% { background-position: 200% center; }
+            100% { background-position: -200% center; }
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        @keyframes zoomIn { 
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        @media (max-width: 768px) {
+            .char-number { display: none; }
+            .toxic-title-intro { font-size: 15vw; } 
+            #music-player { bottom: 10px; left: 10px; width: 260px; }
+            .intro-cover-container { height: 180px; width: 95%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="noise-overlay"></div>
+
+    <!-- Intro Screen Actualizado -->
+    <div id="intro-screen">
+        <div class="intro-cover-container">
+            <img src="https://i.ibb.co/4wbz1Gx9/nobara.gif" alt="Cover" class="intro-gif">
+        </div>
+        <h1 class="toxic-title-intro">TOXIC</h1>
+        <button id="start-btn" class="enter-btn">ENTRAR</button>
+    </div>
+
+    <!-- Main Grid: 11 Columns -->
+    <div id="main-container"></div>
+
+    <!-- Reopen Button (Initially Hidden) -->
+    <button id="reopen-btn">PERFIL</button>
+
+    <!-- Mini Music Player -->
+    <div id="music-player">
+        <div class="album-art" id="disc-toggle">
+            <img src="https://i.musicaimg.com/letras/500/303627.jpg" alt="Album Cover">
+        </div>
+        <div class="song-info">
+            <span class="song-title">Sweet Child O' Mine</span>
+            <span class="song-artist">Guns N' Roses</span>
+        </div>
+        <div class="controls">
+            <button class="play-btn" id="play-pause-btn"><i class="fa-solid fa-pause"></i></button>
+        </div>
+        <!-- Archivo local en raíz -->
+        <audio id="audio-element" loop>
+            <source src="musica.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <!-- Final Info Card -->
+    <div id="final-card">
+        <button class="close-btn" onclick="toggleCard(false)"><i class="fa-solid fa-xmark"></i></button>
+        <div class="card-header">
+            <h1>TOXIC</h1>
+        </div>
+        
+        <div class="card-controls">
+            <button class="tab-btn active" onclick="switchTab('about')">Perfil</button>
+            <button class="tab-btn" onclick="switchTab('friends')">Aliados</button>
+        </div>
+
+        <div id="about" class="content-section active">
+            <p class="about-text">
+                <strong>Cállese Wey</strong><br>
+                No hay mensajes de mi amor.... 
+                <br><br>
+            </p>
+        </div>
+
+        <div id="friends" class="content-section">
+            <div class="friends-grid">
+                 <div class="friend-item">
+                    <img src="https://ui-avatars.com/api/?name=Z&background=111&color=ce93d8" class="friend-img">
+                    <span class="friend-name">Zero</span>
+                </div>
+                <div class="friend-item">
+                    <img src="https://ui-avatars.com/api/?name=K&background=111&color=ce93d8" class="friend-img">
+                    <span class="friend-name">Kira</span>
+                </div>
+                 <div class="friend-item">
+                    <img src="https://ui-avatars.com/api/?name=L&background=111&color=ce93d8" class="friend-img">
+                    <span class="friend-name">Lux</span>
+                </div>
+                <div class="friend-item">
+                    <img src="https://ui-avatars.com/api/?name=N&background=111&color=ce93d8" class="friend-img">
+                    <span class="friend-name">Nox</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- PROTECCIÓN DEL SITIO (Desactivar click derecho y arrastre) ---
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('dragstart', event => event.preventDefault());
+
+        const totalCharacters = 11;
+        
+        const charImages = [
+            "https://i.pinimg.com/736x/fe/fe/91/fefe919c9977edf20d2a781cc5ba89d8.jpg",
+            "https://i.pinimg.com/736x/87/ec/e6/87ece60cecaa5ab650434f9dc04fe1b7.jpg",
+            "https://i.pinimg.com/736x/e0/e8/70/e0e8700f85fe2857cd96f02ca26340ce.jpg",
+            "https://i.pinimg.com/736x/aa/d3/a7/aad3a7c9139c507dbfc4222f67834bfc.jpg",
+            "https://i.pinimg.com/1200x/b4/c2/7a/b4c27a9884c2cf1d6b732de0f0ba148c.jpg",
+            "https://i.pinimg.com/1200x/3e/e4/75/3ee4751a4da1c5c987fdfde094ef1db3.jpg",
+            "https://i.pinimg.com/736x/05/94/27/05942734a9a85467f135191e13ee75a2.jpg",
+            "https://i.pinimg.com/736x/70/5b/f7/705bf75b8741371d170d482fe56cf604.jpg",
+            "https://i.pinimg.com/1200x/66/17/df/6617df4aafd9e2c41d2b7cc30caf565e.jpg",
+            "https://i.pinimg.com/736x/21/32/1c/21321cd5fe988734af1868c16f15aeae.jpg",
+            "https://i.pinimg.com/736x/05/a0/de/05a0dee24a60a85932843056eac8d77a.jpg"
+        ];
+
+        const container = document.getElementById('main-container');
+        const startBtn = document.getElementById('start-btn'); // Ahora vinculado al botón ENTRAR
+        const introScreen = document.getElementById('intro-screen');
+        const finalCard = document.getElementById('final-card');
+        const reopenBtn = document.getElementById('reopen-btn');
+        const musicPlayer = document.getElementById('music-player');
+        const audio = document.getElementById('audio-element');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const discToggle = document.getElementById('disc-toggle');
+
+        for (let i = 0; i < totalCharacters; i++) {
+            const div = document.createElement('div');
+            div.classList.add('char-box');
+            div.style.transitionDelay = `${i * 0.05}s`;
+
+            const img = document.createElement('img');
+            img.src = charImages[i % charImages.length];
+
+            // Posicionamiento
+            if (i === 1) img.style.objectPosition = "15% center"; 
+            if (i === 7) img.style.objectPosition = "90% center";
+            if (i === 9) img.style.objectPosition = "95% center"; 
+            
+            div.appendChild(img);
+
+            const num = document.createElement('div');
+            num.classList.add('char-number');
+            num.innerText = `0${i+1}`;
+            div.appendChild(num);
+
+            container.appendChild(div);
+        }
+
+        const boxes = document.querySelectorAll('.char-box');
+
+        // Evento ENTRAR
+        startBtn.addEventListener('click', () => {
+            introScreen.classList.add('hidden');
+            container.classList.add('active');
+            
+            musicPlayer.classList.add('active');
+            audio.volume = 0.5;
+            // Reproducir música (promesa manejada)
+            audio.play().then(() => {
+                console.log("Audio playing");
+            }).catch(e => {
+                console.log("Audio play failed (interaction needed or file missing)", e);
+            });
+            
+            setTimeout(() => {
+                musicPlayer.classList.add('collapsed');
+            }, 6000);
+
+            boxes.forEach((box, index) => {
+                setTimeout(() => {
+                    box.classList.add('reveal');
+                }, index * 120);
+            });
+
+            setTimeout(() => {
+                finalCard.classList.add('show');
+            }, (totalCharacters * 120) + 600);
+        });
+
+        playPauseBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                musicPlayer.classList.remove('paused');
+            } else {
+                audio.pause();
+                playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+                musicPlayer.classList.add('paused');
+            }
+        });
+
+        discToggle.addEventListener('click', () => {
+            if (musicPlayer.classList.contains('collapsed')) {
+                musicPlayer.classList.remove('collapsed');
+            } else {
+                musicPlayer.classList.add('collapsed');
+            }
+        });
+
+        window.switchTab = function(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        window.toggleCard = function(show) {
+            if (show) {
+                finalCard.classList.remove('hidden-card');
+                finalCard.classList.add('show');
+                reopenBtn.classList.remove('active');
+            } else {
+                finalCard.classList.remove('show');
+                finalCard.classList.add('hidden-card');
+                setTimeout(() => {
+                    reopenBtn.classList.add('active');
+                }, 300);
+            }
+        }
+
+        reopenBtn.addEventListener('click', () => {
+            toggleCard(true);
+        });
+    </script>
+</body>
+</html>
