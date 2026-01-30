@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intoxicada</title>
+    <title>Toxic</title>
     <!-- Fuentes estilo Anime/Tech -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
     <!-- Iconos -->
@@ -25,8 +25,11 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            user-select: none;
-            -webkit-user-drag: none;
+            user-select: none; /* No permitir seleccionar texto */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-user-drag: none; /* No permitir arrastrar */
         }
 
         body {
@@ -636,9 +639,42 @@
     </div>
 
     <script>
-        // --- PROTECCIÓN DEL SITIO (Desactivar click derecho y arrastre) ---
+        // --- PROTECCIÓN AVANZADA DEL SITIO ---
+
+        // 1. Bloquear Click Derecho
         document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // 2. Bloquear Arrastre de Elementos (imágenes, texto)
         document.addEventListener('dragstart', event => event.preventDefault());
+
+        // 3. Bloquear Teclas de Acceso a Código (F12, Ctrl+U, Ctrl+Shift+I, etc.)
+        document.addEventListener('keydown', function(e) {
+            // F12
+            if(e.keyCode == 123) {
+                e.preventDefault();
+                return false;
+            }
+            // Ctrl+Shift+I (DevTools)
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 73) {
+                e.preventDefault();
+                return false;
+            }
+            // Ctrl+Shift+J (Console)
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 74) {
+                e.preventDefault();
+                return false;
+            }
+            // Ctrl+Shift+C (Inspect Element)
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 67) {
+                e.preventDefault();
+                return false;
+            }
+            // Ctrl+U (View Source)
+            if(e.ctrlKey && e.keyCode == 85) {
+                e.preventDefault();
+                return false;
+            }
+        });
 
         const totalCharacters = 11;
         
